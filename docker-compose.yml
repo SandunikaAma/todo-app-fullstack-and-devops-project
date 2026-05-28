@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    restart: always
+
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: todoapp
+
+    ports:
+      - "3307:3306"
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+
+  backend:
+    build: ./backend
+    container_name: backend
+    restart: always
+
+    ports:
+      - "5001:5001"
+
+    depends_on:
+      - mysql
+
+    environment:
+      PORT: 5001
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: todoapp
+      DB_PORT: 3306
+
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    restart: always
+
+    ports:
+      - "5175:80"
+
+    depends_on:
+      - backend
+
+
+volumes:
+  mysql_data:
